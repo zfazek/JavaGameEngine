@@ -20,7 +20,7 @@ public class Engine extends JComponent {
 	private int width;
 	private int height;
 	private long time;
-	private long elapsedTime;
+	private long elapsedTimeInNanos;
 	private long sleepTimeInNanos;
 	private long fpsTime;
 	private int desiredFps;
@@ -68,7 +68,12 @@ public class Engine extends JComponent {
 	}
 	
 	public void setFps(int fps) {
-		this.desiredFps = fps;
+		final int maxFps = 60;
+		if (fps > maxFps) {
+			desiredFps = maxFps;
+		} else {
+			desiredFps = fps;
+		}
 	}
 	
 	private void gameRenderer() {
@@ -117,10 +122,14 @@ public class Engine extends JComponent {
 		gameRenderer();
 		paintScreen();
 		long now = System.nanoTime();
+		long renderTimeInNanos = now - time;
 		calculateFps(now);
-		elapsedTime = now - time + sleepTimeInNanos;
-		sleepTimeInNanos = 1000000000L / desiredFps - (elapsedTime - sleepTimeInNanos);
-//		System.out.println(elapsedTime + " " + sleepTimeInNanos + " " + fps);
+		elapsedTimeInNanos = renderTimeInNanos + sleepTimeInNanos;
+		sleepTimeInNanos = 1000000000L / desiredFps - (elapsedTimeInNanos - sleepTimeInNanos);
+//		System.out.format("render time: %.3f, sleep time: %.3f, fps: %d\n",
+//				(elapsedTimeInNanos - sleepTimeInNanos) / 1000000.0,
+//				sleepTimeInNanos / 1000000.0,
+//				fps);
 		if (sleepTimeInNanos < 1000000) {
 			sleepTimeInNanos = 1000000;
 		}
@@ -137,8 +146,8 @@ public class Engine extends JComponent {
 		}
 	}
 
-	public long getElapsedTime() {
-		return elapsedTime / 1000000;
+	public long getElapsedTimeInMillis() {
+		return elapsedTimeInNanos / 1000000;
 	}
 	
 	@Override

@@ -26,7 +26,7 @@ public class CircleGame implements GameInterface {
 		GameInterface game = new CircleGame();
 		Engine engine = new Engine(game, "Circle Game", width, height);
 		game.setup(engine);
-		engine.setFps(40);
+		engine.setFps(30);
 		game.run(engine);
 	}
 
@@ -76,7 +76,7 @@ public class CircleGame implements GameInterface {
 		while(true) {
 			engine.clearBackground();
 			engine.draw();
-			update(engine.getElapsedTime());
+			update(engine.getElapsedTimeInMillis());
 		}
 	}
 	
