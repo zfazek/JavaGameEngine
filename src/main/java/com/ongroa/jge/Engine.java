@@ -21,7 +21,7 @@ public class Engine extends JComponent {
 	private int height;
 	private long time;
 	private long elapsedTime;
-	private long sleepTimeInMillis;
+	private long sleepTimeInNanos;
 	private long fpsTime;
 	private int desiredFps;
 	private int fps;
@@ -37,7 +37,9 @@ public class Engine extends JComponent {
 		desiredFps = 30;
 		fps = 0;
 		fpsCount = 0;
-		sleepTimeInMillis = 0;
+		sleepTimeInNanos = 0;
+		time = System.nanoTime();
+		fpsTime = System.nanoTime();
 
 		JFrame mainFrame = new JFrame(title);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -51,8 +53,6 @@ public class Engine extends JComponent {
 				game.mousePressed(e);
 			}
 		});
-		time = System.currentTimeMillis();
-		fpsTime = System.currentTimeMillis();
 	}
 
 	public Color getBackgroundColor() {
@@ -106,7 +106,7 @@ public class Engine extends JComponent {
 	private void calculateFps(long time) {
 		long timeDiff = time - fpsTime;
 		fpsCount++;
-		if (timeDiff > 1000) {
+		if (timeDiff > 1000000000) {
 			fps = fpsCount;
 			fpsCount = 0;
 			fpsTime = time;
@@ -116,16 +116,16 @@ public class Engine extends JComponent {
 	public void draw() {
 		gameRenderer();
 		paintScreen();
-		long now = System.currentTimeMillis();
+		long now = System.nanoTime();
 		calculateFps(now);
-		elapsedTime = now - time + sleepTimeInMillis;
-		sleepTimeInMillis = 1000 / desiredFps - (elapsedTime - sleepTimeInMillis) - 1;
-//		System.out.println(elapsedTime + " " + sleepTimeInMillis + " " + fps);
-		if (sleepTimeInMillis < 1) {
-			sleepTimeInMillis = 1;
+		elapsedTime = now - time + sleepTimeInNanos;
+		sleepTimeInNanos = 1000000000L / desiredFps - (elapsedTime - sleepTimeInNanos);
+//		System.out.println(elapsedTime + " " + sleepTimeInNanos + " " + fps);
+		if (sleepTimeInNanos < 1000000) {
+			sleepTimeInNanos = 1000000;
 		}
-		sleep(sleepTimeInMillis);
-		time = System.currentTimeMillis();
+		sleep(sleepTimeInNanos / 1000000);
+		time = System.nanoTime();
 	}
 
 	public void clearBackground() {
@@ -138,7 +138,7 @@ public class Engine extends JComponent {
 	}
 
 	public long getElapsedTime() {
-		return elapsedTime;
+		return elapsedTime / 1000000;
 	}
 	
 	@Override
