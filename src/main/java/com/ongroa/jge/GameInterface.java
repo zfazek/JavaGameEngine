@@ -2,6 +2,7 @@ package com.ongroa.jge;
 
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 public interface GameInterface {
 
@@ -12,4 +13,6 @@ public interface GameInterface {
 	void run(Engine engine);
 
 	void mousePressed(MouseEvent e);
+
+	void keyPressed(List<Key> keys);
 }

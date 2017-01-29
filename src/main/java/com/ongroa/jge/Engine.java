@@ -5,13 +5,17 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
-public class Engine extends JComponent {
+public class Engine extends JComponent implements KeyListener {
 	private static final long serialVersionUID = 1L;
 	private GameInterface game;
 	private Graphics dbg;
@@ -26,11 +30,26 @@ public class Engine extends JComponent {
 	private int desiredFps;
 	private int fps;
 	private int fpsCount;
+	public List<Key> keys;
+	public Key up;
+	public Key down;
+	public Key left;
+	public Key right;
 
 	Engine() {
+		keys = new ArrayList<Key>();
+		up = new Key();
+		keys.add(up);
+		down = new Key();
+		keys.add(down);
+		left = new Key();
+		keys.add(left);
+		right = new Key();
+		keys.add(right);
 	}
 
 	public Engine(final GameInterface game, String title, int width, int height) {
+		this();
 		this.game = game;
 		this.width = width;
 		this.height = height;
@@ -47,12 +66,14 @@ public class Engine extends JComponent {
 		mainFrame.pack();
 		mainFrame.setVisible(true);
 		addMouseListener(new MouseAdapter() {
-			
+
 			@Override
 			public void mousePressed(MouseEvent e) {
 				game.mousePressed(e);
 			}
 		});
+		addKeyListener(this);
+		setFocusable(true);
 	}
 
 	public Color getBackgroundColor() {
@@ -66,7 +87,7 @@ public class Engine extends JComponent {
 	public int getFps() {
 		return fps;
 	}
-	
+
 	public void setFps(int fps) {
 		final int maxFps = 60;
 		if (fps > maxFps) {
@@ -75,7 +96,7 @@ public class Engine extends JComponent {
 			desiredFps = fps;
 		}
 	}
-	
+
 	private void gameRenderer() {
 		if (dbImage == null) {
 			dbImage = createImage(width, height);
@@ -90,6 +111,7 @@ public class Engine extends JComponent {
 		if (dbg != null) {
 			game.draw(dbg);
 		}
+		game.keyPressed(keys);
 	}
 
 	private void paintScreen() {
@@ -125,11 +147,12 @@ public class Engine extends JComponent {
 		long renderTimeInNanos = now - time;
 		calculateFps(now);
 		elapsedTimeInNanos = renderTimeInNanos + sleepTimeInNanos;
-		sleepTimeInNanos = 1000000000L / desiredFps - (elapsedTimeInNanos - sleepTimeInNanos);
-//		System.out.format("render time: %.3f, sleep time: %.3f, fps: %d\n",
-//				(elapsedTimeInNanos - sleepTimeInNanos) / 1000000.0,
-//				sleepTimeInNanos / 1000000.0,
-//				fps);
+		sleepTimeInNanos = 1000000000L / desiredFps -
+				(elapsedTimeInNanos - sleepTimeInNanos);
+		//		System.out.format("render time: %.3f, sleep time: %.3f, fps: %d\n",
+		//				(elapsedTimeInNanos - sleepTimeInNanos) / 1000000.0,
+		//				sleepTimeInNanos / 1000000.0,
+		//				fps);
 		if (sleepTimeInNanos < 1000000) {
 			sleepTimeInNanos = 1000000;
 		}
@@ -149,7 +172,7 @@ public class Engine extends JComponent {
 	public long getElapsedTimeInMillis() {
 		return elapsedTimeInNanos / 1000000;
 	}
-	
+
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -168,4 +191,36 @@ public class Engine extends JComponent {
 		return getPreferredSize();
 	}
 
+	public void keyTyped(KeyEvent e) {
+	}
+
+	public void keyPressed(KeyEvent e) {
+		toggle(e, true);
+	}
+
+
+	public void keyReleased(KeyEvent e) {
+		toggle(e, false);
+	}
+
+	public void releaseAll() {
+		for (Key key : keys) {
+			key.down = false;
+		}
+	}
+
+	private void toggle(KeyEvent e, boolean pressed) {
+		if (e.getKeyCode() == KeyEvent.VK_UP) {
+			up.toggle(pressed);
+		}
+		if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+			down.toggle(pressed);
+		}
+		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+			left.toggle(pressed);
+		}
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			right.toggle(pressed);
+		}
+	}
 }

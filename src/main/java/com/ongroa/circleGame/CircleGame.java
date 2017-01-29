@@ -6,22 +6,25 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import com.ongroa.jge.Engine;
 import com.ongroa.jge.GameInterface;
+import com.ongroa.jge.Key;
 
 public class CircleGame implements GameInterface {
 
 	private static final int width = 1024;
 	private static final int height = 720;
-	
+
 	private Engine engine;
 
 	ArrayList<Circle> circles;
+	Rect rect;
 	Random random;
 	int n;
-	
+
 	public static void main(String[] args) throws IOException{
 		GameInterface game = new CircleGame();
 		Engine engine = new Engine(game, "Circle Game", width, height);
@@ -58,20 +61,23 @@ public class CircleGame implements GameInterface {
 			Circle circle = new Circle(x, y, dx, dy, size, color);
 			circles.add(circle);
 		}
-	}   
+		rect = new Rect(0f, 0f, 0.0f, 0.0f, 50f, Color.cyan);
+	}
 	public void update(long elapsedTime) {
 		for (Circle circle : circles) {
 			circle.update(width, height, elapsedTime);
 		}
+		rect.update(width, height, elapsedTime);
 	}
 
 	public void draw(Graphics dbg) {
+		rect.draw(dbg);
 		drawFps(dbg);
 		for (Circle circle : circles) {
 			circle.draw(dbg);
 		}
 	}
-	
+
 	public void run(Engine engine) {
 		while(true) {
 			engine.clearBackground();
@@ -79,7 +85,7 @@ public class CircleGame implements GameInterface {
 			update(engine.getElapsedTimeInMillis());
 		}
 	}
-	
+
 	public void drawFps(Graphics dbg) {
 		Font font = new Font("Dialog", Font.PLAIN, 12);
 		dbg.setFont(font);
@@ -91,4 +97,41 @@ public class CircleGame implements GameInterface {
 	public void mousePressed(MouseEvent e) {
 		System.out.format("Mouse pressed at (%d, %d)\n" , e.getX(), e.getY());
 	}
+
+	public void keyPressed(List<Key> keys) {
+		updateRect(keys);
+	}
+
+	private void updateRect(List<Key> keys) {
+		float speed = 1.0f * engine.getElapsedTimeInMillis();
+		if (keys.get(0).down) {
+			if (rect.y > speed) {
+				rect.y -= speed;
+			} else {
+				rect.y = 0;
+			}
+		}
+		if (keys.get(1).down) {
+			if (rect.y < height - rect.size - speed) {
+				rect.y += speed;
+			} else {
+				rect.y = height - rect.size;
+			}
+		}
+		if (keys.get(2).down) {
+			if (rect.x > speed) {
+				rect.x -= speed;
+			} else {
+				rect.x = 0;
+			}
+		}
+		if (keys.get(3).down) {
+			if (rect.x < width - rect.size - speed) {
+				rect.x += speed;
+			} else {
+				rect.x = width - rect.size;
+			}
+		}
+	}
 }
+
