@@ -35,6 +35,7 @@ public class Engine extends JComponent implements KeyListener {
 	public Key down;
 	public Key left;
 	public Key right;
+	public Key space;
 
 	Engine() {
 		keys = new ArrayList<Key>();
@@ -46,6 +47,8 @@ public class Engine extends JComponent implements KeyListener {
 		keys.add(left);
 		right = new Key();
 		keys.add(right);
+		space = new Key();
+		keys.add(space);
 	}
 
 	public Engine(final GameInterface game, String title, int width, int height) {
@@ -221,6 +224,9 @@ public class Engine extends JComponent implements KeyListener {
 		}
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 			right.toggle(pressed);
+		}
+		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+			space.toggle(pressed);
 		}
 	}
 }

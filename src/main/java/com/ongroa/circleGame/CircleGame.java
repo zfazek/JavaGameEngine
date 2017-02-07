@@ -3,6 +3,7 @@ package com.ongroa.circleGame;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.MouseInfo;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class CircleGame implements GameInterface {
 	}
 
 	public void setup(Engine engine) {
+		float x, y, dx, dy, ax, ay;
 		this.engine = engine;
 		random = new Random();
 		n = 300;
@@ -41,24 +43,35 @@ public class CircleGame implements GameInterface {
 		circles = new ArrayList<Circle>();
 		for (int i = 0; i < n; i++) {
 			int size = random.nextInt(20) + 20;
-			float x = random.nextFloat() * (width - 2 * size) + size;
-			float y = random.nextFloat() * (height - 2 * size) + size;
-			float dx = random.nextFloat() * 2 - 1;
-			float dy = random.nextFloat() * 2 - 1;
+			if (i == 0) {
+				x = width / 2;
+				y = 10;
+				dx = 0;
+				dy = 0.1f;
+				ax = 0;
+				ay = 0.1f;
+			} else {
+				x = random.nextFloat() * (width - 2 * size) + size;
+				y = random.nextFloat() * (height - 2 * size) + size;
+				dx = random.nextFloat() * 2 - 1;
+				dy = random.nextFloat() * 2 - 1;
+				ax = 0;
+				ay = 0;
+			}
 			Color color;
-			if ( i == 99) {
+			if ( i == 0) {
 				color = Color.red;
-			} else if (i == 98) {
+			} else if (i == 1) {
 				color = Color.yellow;
-			} else if ( i == 97) {
+			} else if ( i == 2) {
 				color = Color.green;
-			} else if ( i == 96) {
+			} else if ( i == 3) {
 				color = Color.blue;
 			} else {
 				int gray = random.nextInt(256);
 				color = new Color(gray, gray, gray);
 			}
-			Circle circle = new Circle(x, y, dx, dy, size, color);
+			Circle circle = new Circle(i, x, y, dx, dy, ax, ay, size, color);
 			circles.add(circle);
 		}
 		rect = new Rect(0f, 0f, 0.0f, 0.0f, 50f, Color.cyan);
@@ -72,6 +85,11 @@ public class CircleGame implements GameInterface {
 
 	public void draw(Graphics dbg) {
 		rect.draw(dbg);
+		dbg.setColor(Color.magenta);
+		int size = 20;
+		int x = MouseInfo.getPointerInfo().getLocation().x - engine.getLocationOnScreen().x - size / 2;
+		int y = MouseInfo.getPointerInfo().getLocation().y - engine.getLocationOnScreen().y - size / 2;
+		dbg.fillOval(x, y, size, size);
 		drawFps(dbg);
 		for (Circle circle : circles) {
 			circle.draw(dbg);
@@ -130,6 +148,12 @@ public class CircleGame implements GameInterface {
 				rect.x += speed;
 			} else {
 				rect.x = width - rect.size;
+			}
+		}
+		if (keys.get(4).down) {
+			if (circles.size() > 0) {
+				circles.get(0).dy -= 1;
+				circles.get(0).ay = 0.1f;
 			}
 		}
 	}
