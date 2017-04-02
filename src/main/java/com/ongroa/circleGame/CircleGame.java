@@ -159,4 +159,3 @@ public class CircleGame implements GameInterface {
 		}
 	}
 }
-
