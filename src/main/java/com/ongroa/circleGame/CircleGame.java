@@ -76,6 +76,7 @@ public class CircleGame implements GameInterface {
 		}
 		rect = new Rect(0f, 0f, 0.0f, 0.0f, 50f, Color.cyan);
 	}
+
 	public void update(long elapsedTime) {
 		for (Circle circle : circles) {
 			circle.update(width, height, elapsedTime);
@@ -121,36 +122,36 @@ public class CircleGame implements GameInterface {
 	}
 
 	private void updateRect(List<Key> keys) {
-		float speed = 1.0f * engine.getElapsedTimeInMillis();
-		if (keys.get(0).down) {
+		float speed = .1f * engine.getElapsedTimeInMillis();
+		if (keys.get(0).isDown()) {
 			if (rect.y > speed) {
 				rect.y -= speed;
 			} else {
 				rect.y = 0;
 			}
 		}
-		if (keys.get(1).down) {
+		if (keys.get(1).isDown()) {
 			if (rect.y < height - rect.size - speed) {
 				rect.y += speed;
 			} else {
 				rect.y = height - rect.size;
 			}
 		}
-		if (keys.get(2).down) {
+		if (keys.get(2).isDown()) {
 			if (rect.x > speed) {
 				rect.x -= speed;
 			} else {
 				rect.x = 0;
 			}
 		}
-		if (keys.get(3).down) {
+		if (keys.get(3).isDown()) {
 			if (rect.x < width - rect.size - speed) {
 				rect.x += speed;
 			} else {
 				rect.x = width - rect.size;
 			}
 		}
-		if (keys.get(4).down) {
+		if (keys.get(4).isDown()) {
 			if (circles.size() > 0) {
 				circles.get(0).dy -= 1;
 				circles.get(0).ay = 0.1f;

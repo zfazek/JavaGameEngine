@@ -37,22 +37,8 @@ public class Engine extends JComponent implements KeyListener {
 	public Key right;
 	public Key space;
 
-	Engine() {
-		keys = new ArrayList<Key>();
-		up = new Key();
-		keys.add(up);
-		down = new Key();
-		keys.add(down);
-		left = new Key();
-		keys.add(left);
-		right = new Key();
-		keys.add(right);
-		space = new Key();
-		keys.add(space);
-	}
-
 	public Engine(final GameInterface game, String title, int width, int height) {
-		this();
+		addKeys();
 		this.game = game;
 		this.width = width;
 		this.height = height;
@@ -75,6 +61,7 @@ public class Engine extends JComponent implements KeyListener {
 				game.mousePressed(e);
 			}
 		});
+		requestFocusInWindow();
 		addKeyListener(this);
 		setFocusable(true);
 	}
@@ -97,49 +84,6 @@ public class Engine extends JComponent implements KeyListener {
 			desiredFps = maxFps;
 		} else {
 			desiredFps = fps;
-		}
-	}
-
-	private void gameRenderer() {
-		if (dbImage == null) {
-			dbImage = createImage(width, height);
-			if (dbImage == null) {
-				System.out.println("dbImage is null");
-				return;
-			}
-		} else {
-			dbg = dbImage.getGraphics();
-		}
-
-		if (dbg != null) {
-			game.draw(dbg);
-		}
-		game.keyPressed(keys);
-	}
-
-	private void paintScreen() {
-		Graphics g;
-		g = getGraphics();
-		if (g != null && dbImage != null) {
-			g.drawImage(dbImage, 0, 0, null);
-			Toolkit.getDefaultToolkit().sync();
-			g.dispose();
-		}
-	}
-
-	private void sleep(long sleepTimeInMillis) {
-		try {
-			Thread.sleep(sleepTimeInMillis);
-		} catch (InterruptedException e) {
-		}
-	}
-	private void calculateFps(long time) {
-		long timeDiff = time - fpsTime;
-		fpsCount++;
-		if (timeDiff > 1000000000) {
-			fps = fpsCount;
-			fpsCount = 0;
-			fpsTime = time;
 		}
 	}
 
@@ -208,8 +152,22 @@ public class Engine extends JComponent implements KeyListener {
 
 	public void releaseAll() {
 		for (Key key : keys) {
-			key.down = false;
+			key.reset();
 		}
+	}
+
+	private void addKeys() {
+		keys = new ArrayList<Key>();
+		up = new Key();
+		keys.add(up);
+		down = new Key();
+		keys.add(down);
+		left = new Key();
+		keys.add(left);
+		right = new Key();
+		keys.add(right);
+		space = new Key();
+		keys.add(space);
 	}
 
 	private void toggle(KeyEvent e, boolean pressed) {
@@ -229,4 +187,48 @@ public class Engine extends JComponent implements KeyListener {
 			space.toggle(pressed);
 		}
 	}
+
+	private void gameRenderer() {
+		if (dbImage == null) {
+			dbImage = createImage(width, height);
+			if (dbImage == null) {
+				System.out.println("dbImage is null");
+				return;
+			}
+		} else {
+			dbg = dbImage.getGraphics();
+		}
+
+		if (dbg != null) {
+			game.draw(dbg);
+		}
+		game.keyPressed(keys);
+	}
+
+	private void paintScreen() {
+		Graphics g;
+		g = getGraphics();
+		if (g != null && dbImage != null) {
+			g.drawImage(dbImage, 0, 0, null);
+			Toolkit.getDefaultToolkit().sync();
+			g.dispose();
+		}
+	}
+
+	private void sleep(long sleepTimeInMillis) {
+		try {
+			Thread.sleep(sleepTimeInMillis);
+		} catch (InterruptedException e) {
+		}
+	}
+	private void calculateFps(long time) {
+		long timeDiff = time - fpsTime;
+		fpsCount++;
+		if (timeDiff > 1000000000) {
+			fps = fpsCount;
+			fpsCount = 0;
+			fpsTime = time;
+		}
+	}
+
 }

@@ -1,14 +1,22 @@
 package com.ongroa.jge;
 
 public class Key {
-	public boolean down;
+	private boolean down;
 
 	Key() {
 	}
 
-	void toggle(boolean pressed) {
+	public void toggle(boolean pressed) {
 		if (pressed != down) {
 			down = pressed;
 		}
+	}
+
+	public void reset() {
+		down = false;
+	}
+
+	public boolean isDown() {
+		return down;
 	}
 }
