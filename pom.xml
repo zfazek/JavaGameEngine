@@ -16,7 +16,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.ongroa.circleGame.CircleGame</mainClass>
+                            <mainClass>com.ongroa.rectGame.RectGame</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

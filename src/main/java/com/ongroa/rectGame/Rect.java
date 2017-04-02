@@ -1,4 +1,4 @@
-package com.ongroa.rect;
+package com.ongroa.rectGame;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
