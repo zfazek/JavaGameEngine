@@ -4,13 +4,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -30,15 +30,10 @@ public class Engine extends JComponent implements KeyListener {
 	private int desiredFps;
 	private int fps;
 	private int fpsCount;
-	public List<Key> keys;
-	public Key up;
-	public Key down;
-	public Key left;
-	public Key right;
-	public Key space;
+	private Keyboard keyboard;
 
 	public Engine(final GameInterface game, String title, int width, int height) {
-		addKeys();
+		keyboard = new Keyboard();
 		this.game = game;
 		this.width = width;
 		this.height = height;
@@ -87,6 +82,10 @@ public class Engine extends JComponent implements KeyListener {
 		}
 	}
 
+	public Keyboard getKeyboard() {
+		return keyboard;
+	}
+
 	public void draw() {
 		gameRenderer();
 		paintScreen();
@@ -120,6 +119,12 @@ public class Engine extends JComponent implements KeyListener {
 		return elapsedTimeInNanos / 1000000;
 	}
 
+	public Point getMouseCoordinate() {
+		int mouseX = MouseInfo.getPointerInfo().getLocation().x - getLocationOnScreen().x;
+		int mouseY = MouseInfo.getPointerInfo().getLocation().y - getLocationOnScreen().y;
+		return new Point(mouseX, mouseY);
+	}
+
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -142,50 +147,12 @@ public class Engine extends JComponent implements KeyListener {
 	}
 
 	public void keyPressed(KeyEvent e) {
-		toggle(e, true);
+		keyboard.toggle(e, true);
 	}
 
 
 	public void keyReleased(KeyEvent e) {
-		toggle(e, false);
-	}
-
-	public void releaseAll() {
-		for (Key key : keys) {
-			key.reset();
-		}
-	}
-
-	private void addKeys() {
-		keys = new ArrayList<Key>();
-		up = new Key();
-		keys.add(up);
-		down = new Key();
-		keys.add(down);
-		left = new Key();
-		keys.add(left);
-		right = new Key();
-		keys.add(right);
-		space = new Key();
-		keys.add(space);
-	}
-
-	private void toggle(KeyEvent e, boolean pressed) {
-		if (e.getKeyCode() == KeyEvent.VK_UP) {
-			up.toggle(pressed);
-		}
-		if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-			down.toggle(pressed);
-		}
-		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-			left.toggle(pressed);
-		}
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			right.toggle(pressed);
-		}
-		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-			space.toggle(pressed);
-		}
+		keyboard.toggle(e, false);
 	}
 
 	private void gameRenderer() {
@@ -202,7 +169,7 @@ public class Engine extends JComponent implements KeyListener {
 		if (dbg != null) {
 			game.draw(dbg);
 		}
-		game.keyPressed(keys);
+		game.keyPressed();
 	}
 
 	private void paintScreen() {

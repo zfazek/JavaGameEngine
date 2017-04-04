@@ -3,23 +3,21 @@ package com.ongroa.rectGame;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
 import com.ongroa.jge.Engine;
 import com.ongroa.jge.GameInterface;
-import com.ongroa.jge.Key;
+import com.ongroa.jge.Keyboard;
 
 public class RectGame implements GameInterface {
 	private static final int width = 1800;
 	private static final int height = 900;
-
 	private Engine engine;
-
+	private Keyboard keyboard;
 	ArrayList<Rect> rects;
 	Random random;
 	int n;
@@ -31,24 +29,82 @@ public class RectGame implements GameInterface {
 		game.setup(engine);
 		engine.setFps(30);
 		game.run(engine);
-
 	}
+
 	public void setup(Engine engine) {
 		this.engine = engine;
-		engine.setBackgroundColor(Color.blue);
+		keyboard = engine.getKeyboard();
+		engine.setBackgroundColor(Color.BLUE);
 		rects = new ArrayList<Rect>();
 		random = new Random();
 		n = 100;
 		init();
 	}
 
-	public void init() {
+	public void update(long elapsedTime) {
+		for (Rect rect : rects) {
+			rect.update(width, height, elapsedTime);
+		}
+	}
+
+	public void draw(Graphics dbg) {
+		if (rects.size() == 0) {
+			drawEnd(dbg);
+		} else {
+			synchronized (rects) {
+				for (Rect rect : rects) {
+					rect.draw(dbg);
+				}
+			}
+			drawFps(dbg);
+			drawStats(dbg);
+		}
+	}
+
+	public void run(Engine engine) {
+		while(true) {
+			engine.clearBackground();
+			engine.draw();
+			update(engine.getElapsedTimeInMillis());
+		}
+	}
+
+	public void mousePressed(MouseEvent e) {
+		if (rects.size() == 0) {
+			init();
+		} else {
+			Point mouseCoordinate = engine.getMouseCoordinate();
+			int counter = 0;
+			click++;
+			synchronized (rects) {
+				Iterator<Rect> it = rects.iterator();
+				while (it.hasNext()) {
+					Rect rect = it.next();
+					if (rect.isInside(mouseCoordinate.x, mouseCoordinate.y)) {
+						it.remove();
+						counter++;
+					}
+				}
+				if (counter == 0) {
+					addRects(4);
+				}
+			}
+		}
+	}
+
+	public void keyPressed() {
+		if (keyboard.space.isDown()) {
+			init();
+		}
+	}
+
+	private void init() {
 		click = 0;
 		rects.clear();
 		addRects(n);
 	}
 
-	public void addRects(int n) {
+	private void addRects(int n) {
 		float x, y, dx, dy, ax, ay;
 		float maxSpeed = 1.5f;
 		for (int i = 0; i < n; i++) {
@@ -69,34 +125,7 @@ public class RectGame implements GameInterface {
 		}
 	}
 
-	public void update(long elapsedTime) {
-		for (Rect rect : rects) {
-			rect.update(width, height, elapsedTime);
-		}
-	}
-
-	public void draw(Graphics dbg) {
-		drawFps(dbg);
-		drawStats(dbg);
-		synchronized (rects) {
-			for (Rect rect : rects) {
-				rect.draw(dbg);
-			}
-		}
-		if (rects.size() == 0) {
-			drawEnd(dbg);
-		}
-	}
-
-	public void run(Engine engine) {
-		while(true) {
-			engine.clearBackground();
-			engine.draw();
-			update(engine.getElapsedTimeInMillis());
-		}
-	}
-
-	public void drawFps(Graphics dbg) {
+	private void drawFps(Graphics dbg) {
 		Font font = new Font("Dialog", Font.PLAIN, 20);
 		dbg.setFont(font);
 		dbg.setColor(Color.white);
@@ -104,7 +133,7 @@ public class RectGame implements GameInterface {
 		dbg.drawString(fps, 0, 20);
 	}
 
-	public void drawStats(Graphics dbg) {
+	private void drawStats(Graphics dbg) {
 		Font font = new Font("Dialog", Font.PLAIN, 20);
 		dbg.setFont(font);
 		dbg.setColor(Color.green);
@@ -112,42 +141,12 @@ public class RectGame implements GameInterface {
 		dbg.drawString(stat, 0, 50);
 	}
 
-	public void drawEnd(Graphics dbg) {
+	private void drawEnd(Graphics dbg) {
 		Font font = new Font("Dialog", Font.PLAIN, 20);
 		dbg.setFont(font);
 		dbg.setColor(Color.green);
 		String str = String.format("You clicked %d.", click);
 		dbg.drawString(str, 0, 80);
-	}
-
-	public void mousePressed(MouseEvent e) {
-		if (rects.size() == 0) {
-			init();
-		} else {
-			int mouseX = MouseInfo.getPointerInfo().getLocation().x - engine.getLocationOnScreen().x;
-			int mouseY = MouseInfo.getPointerInfo().getLocation().y - engine.getLocationOnScreen().y;
-			int counter = 0;
-			click++;
-			synchronized (rects) {
-				Iterator<Rect> it = rects.iterator();
-				while (it.hasNext()) {
-					Rect rect = it.next();
-					if (rect.isInside(mouseX, mouseY)) {
-						it.remove();
-						counter++;
-					}
-				}
-				if (counter == 0) {
-					addRects(4);
-				}
-			}
-		}
-	}
-
-	public void keyPressed(List<Key> keys) {
-		if (keys.get(4).isDown()) {
-			init();
-		}
 	}
 
 }

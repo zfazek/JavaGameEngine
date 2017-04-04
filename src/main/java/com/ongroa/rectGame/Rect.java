@@ -14,7 +14,7 @@ public class Rect {
 	float ax;
 	float ay;
 	float size;
-	float speed = 0.1f;
+	float speed;
 	Color color;
 
 	public Rect(int id, float x, float y, float dx, float dy,
@@ -28,6 +28,7 @@ public class Rect {
 		this.color = color;
 		this.ax = ax;
 		this.ay = ay;
+		speed = 0.1f;
 	}
 
 	public void update(float width, float height, long elapsedTime) {

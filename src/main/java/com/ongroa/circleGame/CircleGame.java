@@ -7,20 +7,17 @@ import java.awt.MouseInfo;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import com.ongroa.jge.Engine;
 import com.ongroa.jge.GameInterface;
-import com.ongroa.jge.Key;
+import com.ongroa.jge.Keyboard;
 
 public class CircleGame implements GameInterface {
-
 	private static final int width = 1024;
 	private static final int height = 720;
-
 	private Engine engine;
-
+	private Keyboard keyboard;
 	ArrayList<Circle> circles;
 	Rect rect;
 	Random random;
@@ -37,6 +34,7 @@ public class CircleGame implements GameInterface {
 	public void setup(Engine engine) {
 		float x, y, dx, dy, ax, ay;
 		this.engine = engine;
+		keyboard = engine.getKeyboard();
 		random = new Random();
 		n = 300;
 		engine.setBackgroundColor(Color.darkGray);
@@ -117,41 +115,41 @@ public class CircleGame implements GameInterface {
 		System.out.format("Mouse pressed at (%d, %d)\n" , e.getX(), e.getY());
 	}
 
-	public void keyPressed(List<Key> keys) {
-		updateRect(keys);
+	public void keyPressed() {
+		updateRect();
 	}
 
-	private void updateRect(List<Key> keys) {
-		float speed = .1f * engine.getElapsedTimeInMillis();
-		if (keys.get(0).isDown()) {
+	private void updateRect() {
+		float speed = 0.1f * engine.getElapsedTimeInMillis();
+		if (keyboard.up.isDown()) {
 			if (rect.y > speed) {
 				rect.y -= speed;
 			} else {
 				rect.y = 0;
 			}
 		}
-		if (keys.get(1).isDown()) {
+		if (keyboard.down.isDown()) {
 			if (rect.y < height - rect.size - speed) {
 				rect.y += speed;
 			} else {
 				rect.y = height - rect.size;
 			}
 		}
-		if (keys.get(2).isDown()) {
+		if (keyboard.left.isDown()) {
 			if (rect.x > speed) {
 				rect.x -= speed;
 			} else {
 				rect.x = 0;
 			}
 		}
-		if (keys.get(3).isDown()) {
+		if (keyboard.right.isDown()) {
 			if (rect.x < width - rect.size - speed) {
 				rect.x += speed;
 			} else {
 				rect.x = width - rect.size;
 			}
 		}
-		if (keys.get(4).isDown()) {
+		if (keyboard.space.isDown()) {
 			if (circles.size() > 0) {
 				circles.get(0).dy -= 1;
 				circles.get(0).ay = 0.1f;
