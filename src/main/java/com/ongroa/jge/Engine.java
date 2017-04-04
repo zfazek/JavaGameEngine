@@ -49,7 +49,6 @@ public class Engine extends JComponent implements KeyListener {
 		mainFrame.getContentPane().add(this);
 		mainFrame.pack();
 		mainFrame.setVisible(true);
-		mainFrame.setSize(width, height);
 		mainFrame.setResizable(false);
 		addMouseListener(new MouseAdapter() {
 
