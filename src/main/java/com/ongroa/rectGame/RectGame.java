@@ -1,7 +1,6 @@
 package com.ongroa.rectGame;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -42,8 +41,10 @@ public class RectGame implements GameInterface {
 	}
 
 	public void update(long elapsedTime) {
-		for (Rect rect : rects) {
-			rect.update(width, height, elapsedTime);
+		synchronized (rects) {
+			for (Rect rect : rects) {
+				rect.update(width, height, elapsedTime);
+			}
 		}
 	}
 
@@ -126,27 +127,18 @@ public class RectGame implements GameInterface {
 	}
 
 	private void drawFps(Graphics dbg) {
-		Font font = new Font("Dialog", Font.PLAIN, 20);
-		dbg.setFont(font);
-		dbg.setColor(Color.WHITE);
 		String fps = String.format("FPS:%3d", engine.getFps());
-		dbg.drawString(fps, 0, 20);
+		engine.drawText(fps, 0, 20, Color.WHITE, 20);
 	}
 
 	private void drawStats(Graphics dbg) {
-		Font font = new Font("Dialog", Font.PLAIN, 20);
-		dbg.setFont(font);
-		dbg.setColor(Color.GREEN);
 		String stat = String.format("%3d", rects.size());
-		dbg.drawString(stat, 0, 50);
+		engine.drawText(stat, 0, 50, Color.GREEN, 20);
 	}
 
 	private void drawEnd(Graphics dbg) {
-		Font font = new Font("Dialog", Font.PLAIN, 20);
-		dbg.setFont(font);
-		dbg.setColor(Color.GREEN);
 		String str = String.format("You clicked %d.", click);
-		dbg.drawString(str, 0, 80);
+		engine.drawText(str, 0, 80, Color.GREEN, 20);
 	}
 
 }

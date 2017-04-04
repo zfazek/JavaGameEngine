@@ -50,7 +50,7 @@ public class Rect {
 
 	public void draw(Graphics dbg) {
 		Graphics2D g2d = (Graphics2D)dbg;
-		g2d.setColor(Color.black);
+		g2d.setColor(Color.BLACK);
 		BasicStroke stroke = new BasicStroke(4);
 		g2d.setStroke(stroke);
 		g2d.drawRect((int)x, (int)y, (int)size, (int)size);
@@ -59,7 +59,8 @@ public class Rect {
 	}
 
 	public boolean isInside(int mouseX, int mouseY) {
-		if (mouseX > x && mouseX < x + size && mouseY > y && mouseY < y + size) {
+		if (mouseX > x && mouseX < x + size &&
+				mouseY > y && mouseY < y + size) {
 			return true;
 		} else {
 			return false;

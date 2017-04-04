@@ -2,6 +2,7 @@ package com.ongroa.jge;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MouseInfo;
@@ -126,6 +127,13 @@ public class Engine extends JComponent implements KeyListener {
 		return new Point(mouseX, mouseY);
 	}
 
+	public void drawText(String str, int x, int y, Color color, int fontSize) {
+		Font font = new Font("Dialog", Font.PLAIN, fontSize);
+		dbg.setFont(font);
+		dbg.setColor(color);
+		dbg.drawString(str, x, y);
+	}
+
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -189,6 +197,7 @@ public class Engine extends JComponent implements KeyListener {
 		} catch (InterruptedException e) {
 		}
 	}
+
 	private void calculateFps(long time) {
 		long timeDiff = time - fpsTime;
 		fpsCount++;
